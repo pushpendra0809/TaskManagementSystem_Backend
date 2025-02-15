@@ -7,7 +7,7 @@ import web from "./Routes/Routes.js";
 
 const app = express()
 const PORT = process.env.PORT ;
-const DATABASE_URL = process.env.DATABASE_URL || 8000;
+const DATABASE_URL = process.env.DATABASE_URL;
 ConnectedDb(DATABASE_URL)
 
 app.use(cors());
