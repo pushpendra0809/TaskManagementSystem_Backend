@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const ConnectedDb = async (DATABASE_URL) => {
     try {
         const DB_Option = {
-            dbName: "TaskManagment",
+            dbName: "taskmanagment",
         };
         await mongoose.connect(DATABASE_URL, DB_Option);
         console.log("Database Successfully Connected");
