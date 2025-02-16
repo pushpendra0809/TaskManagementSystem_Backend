@@ -1,4 +1,4 @@
-import UserModal from "../Modal/UserSchema.js"
+import UserModel from "../Modal/UserSchema.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken";
 const User = {
@@ -7,15 +7,13 @@ const User = {
         try {
             const {firstname, lastname, email, password, Userrole,  } = req.body;
 
-            const existingUser = await UserModal.findOne({ email: email });
+            const existingUser = await UserModel.findOne({ email: email });
             if (existingUser) {
               return res.status(400).send({"status":"failed", "message":"User already registered with this email."});
             }else{
                 if(firstname && lastname && email && password && Userrole ){
-                    
-
                     const hashPassword = await bcrypt.hash(req.body.password, 10) 
-                    const doc = new UserModal({
+                    const doc = new UserModel({
                         firstname:firstname,
                         lastname:lastname,
                         email:email,
@@ -24,23 +22,17 @@ const User = {
                     })
                     const result = await doc.save();
         
-                    const save_user = await UserModal.findOne({email:email})
-                    const token = jwt.sign({userID : save_user._Id}, process.env.JWT_SECRET_KEY, {expiresIn:"5d"})
-        
-                   return res.status(201).send({"status":"success", "message":"Registration Success","token":token});
+                    const save_user = await UserModel.findOne({email:email})
+                    const token = jwt.sign({ userID: save_user._id }, process.env.JWT_SECRET_KEY, { expiresIn: "5d" });
+
+                   return res.status(201).send({"status":"success", "message":"Registration Success","token":token,"result":result});
                     
                 }else{
                     return res.status(400).send({"status":"failed", "message":"All field are required."});
                 }
             }
-
-           
         } catch (error) {
-            return res.status(500).send({
-                status: "failed",
-                message: "An error occurred during registration.",
-                error: error.message,
-              });
+            return res.status(500).send({status: "failed",message: "An error occurred during registration.",error: error.message,});
         }
      },
 
@@ -50,7 +42,7 @@ const User = {
            const { email, password} = req.body;
            if(email && password){
 
-           const result =await UserModal.findOne({email:email})
+           const result =await UserModel.findOne({email:email})
            if (result != null ){
             const isMatch = await bcrypt.compare(password, result.password)
             if(result.email == email && isMatch){
@@ -91,14 +83,14 @@ const User = {
             return res.status(400).send({ "status": "failed", "message": "Email and new password are required." });
           }
     
-          const user = await UserModal.findOne({ email: email });
+          const user = await UserModel.findOne({ email: email });
           if (!user) {
             return res.status(404).send({ "status": "failed", "message": "User not found." });
           }
     
           const hashedPassword = await bcrypt.hash(newPassword, 10);
     
-          await UserModal.findOneAndUpdate({ email: email }, { password: hashedPassword });
+          await UserModel.findOneAndUpdate({ email: email }, { password: hashedPassword });
     
           return res.status(200).send({ "status": "success", "message": "Password successfully reset. You can now log in with your new password." });
         } catch (error) {
@@ -121,7 +113,7 @@ const User = {
           if (!decoded) {
             return res.status(401).send({ status: "failed", message: "Invalid or expired token." });
           }
-          const user = await UserModal.findById(decoded.userID);
+          const user = await UserModel.findById(decoded.userID);
           if (!user) {
             return res.status(404).send({ status: "failed", message: "User not found." });
           }
@@ -145,7 +137,7 @@ const User = {
 
       AllUser: async (req,res) =>{
         try {
-            const result = await UserModal.find()
+            const result = await UserModel.find()
             if(result){
                 res.status(200).send({"status":"success", "message":"All products ssuccessfully Shown", "result": result})
             }else{
@@ -167,7 +159,7 @@ const User = {
                 return res.status(400).send({ "status": "failed", "message": "Property ID is required" });
               }
 
-            const result = await UserModal.findById(id)
+            const result = await UserModel.findById(id)
             if(result){
                 res.status(200).send({"status":"Success", "message":"Property Successfully Get", "result":result})
             }else{
@@ -184,7 +176,7 @@ const User = {
             const id = req.params.id;
             const updateData = { ...req.body };
 
-            const result = await UserModal.findByIdAndUpdate(id, updateData, { new: true });
+            const result = await UserModel.findByIdAndUpdate(id, updateData, { new: true });
             if (result) {
                 res.status(200).send({ "status": "Success", "message": "Property Successfully Updated", "result": result });
             } else {
@@ -204,7 +196,7 @@ const User = {
                 return res.status(400).send({ "status": "failed", "message": "Property ID is required" });
               }
 
-            const result = await UserModal.findByIdAndDelete(id)
+            const result = await UserModel.findByIdAndDelete(id)
             if(result){
                 res.status(200).send({"status":"Success", "message":"Property Successfully Delete", "result":result})
             }else{

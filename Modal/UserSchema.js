@@ -23,6 +23,6 @@ const UserSchema = mongoose.Schema({
 
 })
 
-const UserModal = mongoose.model("TaskManagementUser",UserSchema)
+const UserModel = mongoose.model("TaskManagementUser",UserSchema)
 
-export default UserModal
+export default UserModel
